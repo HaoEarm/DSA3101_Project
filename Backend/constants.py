@@ -1,1 +1,1 @@
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "Put the api-key here"

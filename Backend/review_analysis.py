@@ -38,6 +38,25 @@ def analyze_reviews():
     except Exception as e:
         print(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
+@app.route('/index_statistics', methods=['GET'])
+def index_statistics():
+    try:
+        os.environ["OPENAI_API_KEY"] = constants.OPENAI_API_KEY
+        client = OpenAI()
+
+        completion = client.chat.completions.create(
+            model = "gpt-3.5-turbo",
+            messages= [{"role":"system", "content": """You are a helpful assisstant and you will be given the reviews for a bank application from users. 
+                Your job is give statistics of the data like the average score, and the numbers etc"
+        """},
+                {"role":"user","content":full_text[:5000]}],
+            max_tokens = 3000,
+    )
+        generated_text = str(completion.choices[0].message.content)
+        return jsonify({"analysis": generated_text})
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)

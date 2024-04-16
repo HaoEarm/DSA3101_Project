@@ -27,58 +27,78 @@
 #     html.Button('Analyze Reviews and generate recommendations',
 #                 id='analyze-btn', n_clicks=0),
 #     dcc.Loading(id="loading", children=[html.Div(id="analysis-output")], type="default"),
-    html.Br(),
-    html.Button('Generate statistics of the reviews',
-                id='second-btn', n_clicks=0),  # The second button
-    dcc.Loading(id="loading2", children=[html.Div(id="second-output")], type="default"),  # Output for the second button
-# ])
-# ####################### CALLBACKS ################################
-# @callback(Output("histogram", "figure"), [Input("dist_column", "value"), ])
-# def update_histogram(dist_column):
-#     return create_distribution(dist_column)
+#     html.Br(),
+#     html.Button('Generate statistics of the reviews',
+#                 id='second-btn', n_clicks=0),  # The second button
+#     dcc.Loading(id="loading2", children=[html.Div(id="second-output")], type="default"),  # Output for the second button
+# # ])
+# # ####################### CALLBACKS ################################
+# # @callback(Output("histogram", "figure"), [Input("dist_column", "value"), ])
+# # def update_histogram(dist_column):
+# #     return create_distribution(dist_column)
 
+# # @dash.callback(
+# #     Output("analysis-output", "children"),
+# #     [Input("analyze-btn", "n_clicks")],
+# #     prevent_initial_call = True
+# # )
+
+# def on_button_click(n_clicks):
+#     if n_clicks > 0:
+#         # This is where you'll call your backend API
+#         response = requests.get('http://localhost:5001/analyze_reviews')
+#         if response.status_code == 200:
+#             analysis_result = response.json().get('analysis', 'No analysis found.')
+#             # Split the result by new line and create a list of components for Dash to render
+#             analysis_components = []
+#             for line in analysis_result.split('\n'):
+#                 analysis_components.append(html.P(line))
+#                 analysis_components.append(html.Br())  # add a line break after each line
+#             return html.Div([
+#                 html.H5("Analysis Results:"),
+#                 html.Div(analysis_components)  # use the list of components
+#             ])
+#         else:
+#             print(response.text)
+#             return "Failed to get analysis results."
+#     return "Click the button to analyze reviews."
 # @dash.callback(
-#     Output("analysis-output", "children"),
-#     [Input("analyze-btn", "n_clicks")],
-#     prevent_initial_call = True
+#     Output("second-output", "children"),
+#     [Input("second-btn", "n_clicks")],
+#     prevent_initial_call=True
 # )
+# def on_second_button_click(n_clicks):
+#     if n_clicks > 0:
+#         # Call the `/index statistics` endpoint
+#         response = requests.get('http://localhost:5001/index_statistics')
+#         if response.status_code == 200:
+#             analysis_result = response.json().get('analysis', 'No analysis found.')
+#             analysis_components = [html.P(line) for line in analysis_result.split('\n')]
+#             return html.Div([
+#                 html.H5("Index Statistics:"),
+#                 html.Div(analysis_components)
+#             ])
+#         else:
+#             print(response.text)
+#             return "Failed to get analysis results."
+#     return "Click the button to get index statistics."
 
-def on_button_click(n_clicks):
-    if n_clicks > 0:
-        # This is where you'll call your backend API
-        response = requests.get('http://localhost:5001/analyze_reviews')
-        if response.status_code == 200:
-            analysis_result = response.json().get('analysis', 'No analysis found.')
-            # Split the result by new line and create a list of components for Dash to render
-            analysis_components = []
-            for line in analysis_result.split('\n'):
-                analysis_components.append(html.P(line))
-                analysis_components.append(html.Br())  # add a line break after each line
-            return html.Div([
-                html.H5("Analysis Results:"),
-                html.Div(analysis_components)  # use the list of components
-            ])
-        else:
-            print(response.text)
-            return "Failed to get analysis results."
-    return "Click the button to analyze reviews."
-@dash.callback(
-    Output("second-output", "children"),
-    [Input("second-btn", "n_clicks")],
-    prevent_initial_call=True
+from dash import html, register_page  #, callback # If you need callbacks, import it here.
+
+register_page(
+    __name__,
+    name='Analysis',
+    top_nav=True,
+    path='/analysisPage'
 )
-def on_second_button_click(n_clicks):
-    if n_clicks > 0:
-        # Call the `/index statistics` endpoint
-        response = requests.get('http://localhost:5001/index_statistics')
-        if response.status_code == 200:
-            analysis_result = response.json().get('analysis', 'No analysis found.')
-            analysis_components = [html.P(line) for line in analysis_result.split('\n')]
-            return html.Div([
-                html.H5("Index Statistics:"),
-                html.Div(analysis_components)
-            ])
-        else:
-            print(response.text)
-            return "Failed to get analysis results."
-    return "Click the button to get index statistics."
+
+
+def layout():
+    layout = html.Div([
+        html.H1(
+            [
+                "Analysis"
+            ]
+        )
+    ])
+    return layout

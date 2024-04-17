@@ -31,17 +31,17 @@
 #     html.Button('Generate statistics of the reviews',
 #                 id='second-btn', n_clicks=0),  # The second button
 #     dcc.Loading(id="loading2", children=[html.Div(id="second-output")], type="default"),  # Output for the second button
-# # ])
-# # ####################### CALLBACKS ################################
-# # @callback(Output("histogram", "figure"), [Input("dist_column", "value"), ])
-# # def update_histogram(dist_column):
-# #     return create_distribution(dist_column)
+# ])
+# ####################### CALLBACKS ################################
+# @callback(Output("histogram", "figure"), [Input("dist_column", "value"), ])
+# def update_histogram(dist_column):
+#     return create_distribution(dist_column)
 
-# # @dash.callback(
-# #     Output("analysis-output", "children"),
-# #     [Input("analyze-btn", "n_clicks")],
-# #     prevent_initial_call = True
-# # )
+# @dash.callback(
+#     Output("analysis-output", "children"),
+#     [Input("analyze-btn", "n_clicks")],
+#     prevent_initial_call = True
+# )
 
 # def on_button_click(n_clicks):
 #     if n_clicks > 0:

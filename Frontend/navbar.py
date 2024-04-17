@@ -46,8 +46,11 @@ def create_navbar():
                 children=[  # Add as many menu items as you need
                     dbc.DropdownMenuItem("Home", href='/'),
                     dbc.DropdownMenuItem(divider=True),
-                    dbc.DropdownMenuItem("Analysis", href='/analysisPage'),
-                    dbc.DropdownMenuItem("Page 3", href='/page3'),
+                    dbc.DropdownMenuItem("Comments", href='/analysisPage'),
+                    dbc.DropdownMenuItem("Negative Sentiments", href='/page3'),
+                    dbc.DropdownMenuItem("GXS Wordcloud", href='/page4'),
+                    dbc.DropdownMenuItem("Other banks Wordcloud", href='/page5'),
+                    dbc.DropdownMenuItem("NPS", href='/page6')
                 ],
             ),
         ],

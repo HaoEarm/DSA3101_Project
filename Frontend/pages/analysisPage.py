@@ -1,99 +1,46 @@
-# import pandas as pd
-# import dash
-# from dash import dcc, html, callback
-# import plotly.express as px
-# from dash.dependencies import Input, Output
-# import requests
-
-# dash.register_page(__name__, path='/analysis', name="Analysis 📊")
-
-# ####################### LOAD DATASET #############################
-# df = pd.read_csv("output.csv")
-
-# ####################### HISTOGRAM ###############################
-# def create_distribution(col_name="Revolut"):
-#     return px.histogram(data_frame=df, x="Sentiment", height=600)
-
-# ####################### WIDGETS ################################
-# columns = ["Revolut"]
-# dd = dcc.Dropdown(id="dist_column", options=columns, value="Revolut", clearable=False)
-
-# ####################### PAGE LAYOUT #############################
-# layout = html.Div(children=[
-#     html.Br(),
-#     html.P("Select Column:"),
-#     dd,
-#     dcc.Graph(id="histogram"),
-#     html.Button('Analyze Reviews and generate recommendations',
-#                 id='analyze-btn', n_clicks=0),
-#     dcc.Loading(id="loading", children=[html.Div(id="analysis-output")], type="default"),
-#     html.Br(),
-#     html.Button('Generate statistics of the reviews',
-#                 id='second-btn', n_clicks=0),  # The second button
-#     dcc.Loading(id="loading2", children=[html.Div(id="second-output")], type="default"),  # Output for the second button
-# ])
-# ####################### CALLBACKS ################################
-# @callback(Output("histogram", "figure"), [Input("dist_column", "value"), ])
-# def update_histogram(dist_column):
-#     return create_distribution(dist_column)
-
-# @dash.callback(
-#     Output("analysis-output", "children"),
-#     [Input("analyze-btn", "n_clicks")],
-#     prevent_initial_call = True
-# )
-
-# def on_button_click(n_clicks):
-#     if n_clicks > 0:
-#         # This is where you'll call your backend API
-#         response = requests.get('http://localhost:5001/analyze_reviews')
-#         if response.status_code == 200:
-#             analysis_result = response.json().get('analysis', 'No analysis found.')
-#             # Split the result by new line and create a list of components for Dash to render
-#             analysis_components = []
-#             for line in analysis_result.split('\n'):
-#                 analysis_components.append(html.P(line))
-#                 analysis_components.append(html.Br())  # add a line break after each line
-#             return html.Div([
-#                 html.H5("Analysis Results:"),
-#                 html.Div(analysis_components)  # use the list of components
-#             ])
-#         else:
-#             print(response.text)
-#             return "Failed to get analysis results."
-#     return "Click the button to analyze reviews."
-# @dash.callback(
-#     Output("second-output", "children"),
-#     [Input("second-btn", "n_clicks")],
-#     prevent_initial_call=True
-# )
-# def on_second_button_click(n_clicks):
-#     if n_clicks > 0:
-#         # Call the `/index statistics` endpoint
-#         response = requests.get('http://localhost:5001/index_statistics')
-#         if response.status_code == 200:
-#             analysis_result = response.json().get('analysis', 'No analysis found.')
-#             analysis_components = [html.P(line) for line in analysis_result.split('\n')]
-#             return html.Div([
-#                 html.H5("Index Statistics:"),
-#                 html.Div(analysis_components)
-#             ])
-#         else:
-#             print(response.text)
-#             return "Failed to get analysis results."
-#     return "Click the button to get index statistics."
-
-
-from dash import html, dcc, register_page, dash_table, Input, Output, callback
+from dash import html, dcc, register_page, dash_table, Input, Output, callback, State
 import pandas as pd
 import dash
 import requests
+import dash_bootstrap_components as dbc
+
 
 # Assume df is a pandas DataFrame with the data from your CSV
 df = pd.read_csv("https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Data/predictions.csv")
 banks = df['Bank'].unique().tolist()  # Get unique list of banks for the dropdown
 
 register_page(__name__, name='Analysis', top_nav=True, path='/analysisPage')
+
+example_query_button1 = dbc.Button(
+    "Example query: Give statistics about the data",
+    id="example-prompt-btn1",
+    n_clicks=0,
+    className="mb-2",
+    style={
+        'backgroundColor': '#FFB6C1',  # Light pink
+        'color': '#495057',            # Dark gray text
+        'borderRadius': '15px',        # Rounded corners
+        'border': 'none',              # Remove default border
+        'width': '70%',                # Maintain the width specification if desired
+        'boxShadow': '2px 2px 10px rgba(0,0,0,0.1)'  # Subtle shadow for depth
+    }
+)
+
+example_query_button2 = dbc.Button(
+    "Example query: Generate recommendations for the application",
+    id="example-prompt-btn2",
+    n_clicks=0,
+    className="mb-2",
+    style={
+        'backgroundColor': '#FFDAB9',  # Peach color
+        'color': '#495057',            # Dark gray text
+        'borderRadius': '15px',        # Rounded corners
+        'border': 'none',              # Remove default border
+        'width': '70%',                # Maintain the width specification if desired
+        'boxShadow': '2px 2px 10px rgba(0,0,0,0.1)'  # Subtle shadow for depth
+    }
+)
+
 
 def layout():
     return html.Div([
@@ -104,73 +51,100 @@ def layout():
             value=banks[0],  # Default value
             clearable=False
         ),
-        dash_table.DataTable(
-            id='table',
-            columns=[
-                {'name': 'Customer ID', 'id': 'UserName'},
-                {'name': 'Comments', 'id': 'Review'},
-                {'name': 'Score', 'id': 'Score'},
-                {'name': 'Date', 'id': 'Date'},
-                {'name': 'Bank', 'id': 'Bank'}
-            ],
-            data=df.to_dict('records'),
-            style_cell={'textAlign': 'left', 'padding': '5px'},
-            style_cell_conditional=[
-                {'if': {'column_id': 'Review'}, 'width': '800px'},
-                {'if': {'column_id': 'UserName'}, 'width': '200px'},
-                {'if': {'column_id': 'Score'}, 'width': '100px'},
-                {'if': {'column_id': 'Date'}, 'width': '150px'},
-                {'if': {'column_id': 'Bank'}, 'width': '150px'}
-            ],
-            style_data={'whiteSpace': 'normal', 'height': 'auto'},
-            page_size=10,  # Specify the number of rows per page
-            style_table={'height': '600px', 'overflowY': 'auto'},
-            style_header={'backgroundColor': 'rgb(30, 30, 30)', 'color': 'white'}
-        ),
-        html.Button('Analyze Reviews and generate recommendations',
-                    id='analyze-btn', n_clicks=0),
-        dcc.Loading(id="loading", children=[html.Div(id="analysis-output")], type="default"),
-        html.Br(),
-        html.Button('Generate statistics of the reviews',
-                    id='second-btn', n_clicks=0),
-        dcc.Loading(id="loading2", children=[html.Div(id="second-output")], type="default"),
+        dbc.Row([
+            dbc.Col([
+                # This is the column for the DataTable
+                dash_table.DataTable(
+                    id='table',
+                    columns=[
+                        {'name': 'Customer ID', 'id': 'UserName'},
+                        {'name': 'Comments', 'id': 'Review'},
+                        {'name': 'Score', 'id': 'Score'},
+                        {'name': 'Date', 'id': 'Date'},
+                        {'name': 'Bank', 'id': 'Bank'}
+                    ],
+                    data=df.to_dict('records'),
+                    style_cell={'textAlign': 'left', 'padding': '5px'},
+                    style_cell_conditional=[
+                        {'if': {'column_id': 'Review'}, 'width': '800px'},
+                        {'if': {'column_id': 'UserName'}, 'width': '200px'},
+                        {'if': {'column_id': 'Score'}, 'width': '100px'},
+                        {'if': {'column_id': 'Date'}, 'width': '150px'},
+                        {'if': {'column_id': 'Bank'}, 'width': '150px'}
+                    ],
+                    style_data={'whiteSpace': 'normal', 'height': 'auto'},
+                    page_size=5,  # Specify the number of rows per page
+                    style_table={'height': '700px', 'overflowY': 'auto'},
+                    style_header={'backgroundColor': 'rgb(30, 30, 30)', 'color': 'white'}
+                ),
+            ], width=6),  # Using half the width of the row for the DataTable
+            dbc.Col([
+                # This column now contains the output and input field, submit button
+                dcc.Loading(id="loading-query", children=[html.Div(
+                id="custom-query-output",
+                style={"overflowY": "scroll", "height": "600px"}  # Adjust height as needed
+            )], type="default",
+                            style={"display": "none"}),
+                # Move this div to the bottom for input and submit
+                html.Div([
+                    example_query_button1,
+                    example_query_button2,
+                    dcc.Input(
+                        id='custom-query-input',
+                        type='text',
+                        placeholder='Enter your query about the reviews...',
+                        style={'width': '90%'}  # Adjust width as needed
+                    ),
+                    dbc.Button(
+                        html.Span(className="fa fa-arrow-right"),  # Using Font Awesome arrow icon
+                        id='submit-query-btn',
+                        n_clicks=0,
+                        className="btn btn-primary",
+                        style={'padding': '2px 6px'}
+                    ),
+                ], style={'width': '50%', 'position': 'absolute', 'bottom': 10}),
+                # Make sure this takes the full width
+            ], width=6),  # Using the other half of the width
+        ]),
     ], style={'padding': '20px'})
 
-# Callback for the Analyze Reviews button
 @callback(
-    Output("analysis-output", "children"),
-    [Input("analyze-btn", "n_clicks")],
+    Output('custom-query-output', 'children'),
+    Input('submit-query-btn', 'n_clicks'),
+    State('custom-query-input', 'value'),
     prevent_initial_call=True
 )
-def on_analyze_button_click(n_clicks):
-    if n_clicks > 0:
-        response = requests.get('http://localhost:5001/analyze_reviews')
+def handle_custom_query(n_clicks, query):
+    if n_clicks > 0 and query:
+        response = requests.post('http://localhost:5001/custom_query', json={"query": query})
         if response.status_code == 200:
-            analysis_result = response.json().get('analysis', 'No analysis found.')
-            return html.Div([html.P(part) for part in analysis_result.split('\n')])
+            result = response.json().get('response', 'No response found.')
+            return html.Div([html.P(part) for part in result.split('\n')])
         else:
-            return f"Failed to get analysis results. Status code: {response.status_code}"
+            return f"Failed to get response. Status code: {response.status_code}"
+    return "Please enter a query and press submit."
 
-# Callback for the Generate statistics button
-@callback(
-    Output("second-output", "children"),
-    [Input("second-btn", "n_clicks")],
-    prevent_initial_call=True
-)
-def on_statistics_button_click(n_clicks):
-    if n_clicks > 0:
-        response = requests.get('http://localhost:5001/index_statistics')
-        if response.status_code == 200:
-            statistics_result = response.json().get('analysis', 'No statistics found.')
-            return html.Div([html.P(part) for part in statistics_result.split('\n')])
-        else:
-            return f"Failed to get statistics results. Status code: {response.status_code}"
 
-# Callback to update table based on bank selection
 @callback(
-    Output('table', 'data'),
-    [Input('bank-filter', 'value')]
+    Output('table', 'data'),  # Updates the data of the 'table' component
+    [Input('bank-filter', 'value')]  # Listens for changes in the 'bank-filter' dropdown
 )
 def update_table(selected_bank):
     filtered_df = df[df['Bank'] == selected_bank]
     return filtered_df.to_dict('records')
+
+from dash import callback_context
+
+@callback(
+    Output('custom-query-input', 'value'),
+    [Input('example-prompt-btn1', 'n_clicks'),
+     Input('example-prompt-btn2', 'n_clicks')],
+    prevent_initial_call=True
+)
+def update_input(btn1_clicks, btn2_clicks):
+    triggered_id = callback_context.triggered[0]['prop_id'].split('.')[0]
+    if triggered_id == 'example-prompt-btn1':
+        return "Give statistics about the data"
+    elif triggered_id == 'example-prompt-btn2':
+        return "Generate recommendations for the application"
+    return dash.no_update

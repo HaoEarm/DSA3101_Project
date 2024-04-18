@@ -9,10 +9,10 @@ register_page(
 )
 
 
-with open('Frontend\other_bank_promoter_cloud.png', 'rb') as f:
+with open('C:\\Users\\e0906\\OneDrive\\Desktop\\2222\\Frontend\\other_bank_promoter_cloud.png', 'rb') as f:
     encoded_image1 = base64.b64encode(f.read()).decode('utf-8')
 
-with open('Frontend\other_bank_detractor_cloud.png', 'rb') as f2:
+with open('C:\\Users\\e0906\\OneDrive\\Desktop\\2222\\Frontend\\other_bank_detractor_cloud.png', 'rb') as f2:
     encoded_image2 = base64.b64encode(f2.read()).decode('utf-8')
 
 

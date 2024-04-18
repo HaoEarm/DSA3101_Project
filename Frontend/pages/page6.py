@@ -9,7 +9,7 @@ register_page(
 )
 
 
-with open('Frontend\o_nps.png', 'rb') as f:
+with open('C:\\Users\\e0906\\OneDrive\\Desktop\\2222\\Frontend\\other_bank_detractor_cloud.png', 'rb') as f:
     encoded_image1 = base64.b64encode(f.read()).decode('utf-8')
 
 

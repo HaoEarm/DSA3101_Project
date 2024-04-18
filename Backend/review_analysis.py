@@ -20,13 +20,12 @@ def analyze_reviews():
         client = OpenAI()
 
         completion = client.chat.completions.create(
-            model = "gpt-3.5-turbo",
+            model = "gpt-4-turbo",
             messages= [{"role":"system", "content": """You are a helpful assisstant and you will be given the reviews for a bank application from users. 
                 Your job is to summarize 5 categories of the negative comments and provide 5 recommendations in bullet point format 
                 without using new lines or line breaks."
         """},
-                {"role":"user","content":full_text[:5000]}],
-            max_tokens = 3000,
+                {"role":"user","content":full_text[:]}],
     )
         generated_text = str(completion.choices[0].message.content)
         #cleaned_text = generated_text.replace("\\n", "\n")  # Replace escaped newlines with spaces
@@ -45,12 +44,11 @@ def index_statistics():
         client = OpenAI()
 
         completion = client.chat.completions.create(
-            model = "gpt-3.5-turbo",
+            model = "gpt-4-turbo",
             messages= [{"role":"system", "content": """You are a helpful assisstant and you will be given the reviews for a bank application from users. 
-                Your job is give statistics of the data like the average score, and the numbers etc"
+                Your job is give statistics of the data like the average score, and the numbers etc. You can give any related data about numbers but do not include the calculation process, give the result directly"
         """},
-                {"role":"user","content":full_text[:5000]}],
-            max_tokens = 3000,
+                {"role":"user","content":full_text[:]}],
     )
         generated_text = str(completion.choices[0].message.content)
         return jsonify({"analysis": generated_text})

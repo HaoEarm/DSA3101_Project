@@ -11,33 +11,33 @@ def create_navbar():
                         html.I(className="fa-brands fa-github"),  # Font Awesome Icon
                         " "  # Text beside icon
                     ],
-                    href="[YOUR GITHUB PROFILE URL]",
+                    href="[https://github.com/HaoEarm/DSA3101_Project/tree/main]",
                     target="_blank"
                 )
 
             ),
-            dbc.NavItem(
-                dbc.NavLink(
-                    [
-                        html.I(className="fa-brands fa-medium"),  # Font Awesome Icon
-                        " "  # Text beside icon
-                    ],
-                    href="[YOUR MEDIUM PROFILE URL]",
-                    target="_blank"
-                )
+            # dbc.NavItem(
+            #     dbc.NavLink(
+            #         [
+            #             html.I(className="fa-brands fa-medium"),  # Font Awesome Icon
+            #             " "  # Text beside icon
+            #         ],
+            #         href="[YOUR MEDIUM PROFILE URL]",
+            #         target="_blank"
+            #     )
 
-            ),
-            dbc.NavItem(
-                dbc.NavLink(
-                    [
-                        html.I(className="fa-brands fa-linkedin"),  # Font Awesome Icon
-                        " "  # Text beside icon
-                    ],
-                    href="[YOUR LINKEDIN PROFILE URL]",
-                    target="_blank"
-                )
+            # ),
+            # dbc.NavItem(
+            #     dbc.NavLink(
+            #         [
+            #             html.I(className="fa-brands fa-linkedin"),  # Font Awesome Icon
+            #             " "  # Text beside icon
+            #         ],
+            #         href="[YOUR LINKEDIN PROFILE URL]",
+            #         target="_blank"
+            #     )
 
-            ),
+            # ),
             dbc.DropdownMenu(
                 nav=True,
                 in_navbar=True,
@@ -46,11 +46,10 @@ def create_navbar():
                 children=[  # Add as many menu items as you need
                     dbc.DropdownMenuItem("Home", href='/'),
                     dbc.DropdownMenuItem(divider=True),
+                    dbc.DropdownMenuItem("Sentiment Breakdown", href='/page2'),
+                    dbc.DropdownMenuItem("Wordclouds", href='/page3'),
+                    dbc.DropdownMenuItem("NPS", href='/page4'),
                     dbc.DropdownMenuItem("Comments", href='/analysisPage'),
-                    dbc.DropdownMenuItem("Negative Sentiments", href='/page3'),
-                    dbc.DropdownMenuItem("GXS Wordcloud", href='/page4'),
-                    dbc.DropdownMenuItem("Other banks Wordcloud", href='/page5'),
-                    dbc.DropdownMenuItem("NPS", href='/page6')
                 ],
             ),
         ],

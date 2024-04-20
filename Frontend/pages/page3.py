@@ -1,32 +1,10 @@
-# import dash
-# from dash import html
-
-# dash.register_page(__name__, path='/test', name="Testing :)")
-
-
-# layout = html.Div(children=[
-#     html.Div(children=[
-#         html.H2("Hi"),
-#         "testing",
-#         html.Br(),html.Br(),
-#         "testing2",
-#         html.Br(), html.Br(),
-#         "testing3"])
-#     ])
-
-
 import dash
-from dash import html, register_page, callback # If you need callbacks, import it here.
+from dash import html, register_page
 from dash import dcc
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input,Output
-import pandas as pd
 import base64
-import plotly.graph_objects as go
-from flask import Flask
-import os
-import plotly.express as px
-#import charts
+import requests
+
 
 register_page(
     __name__,
@@ -35,56 +13,95 @@ register_page(
     path='/page3'
 )
 
+# Download and save the images
+def download_image(url, filename):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+    else:
+        print(f'Failed to download image from {url}')
 
-# def layout():
-#     layout = html.Div([
-#         html.H1(
-#             [
-#                 "Page 3"
-#             ]
-#         )
-#     ])
-#     return layout
-
-
-df3 = pd.read_csv("https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Data/predictions.csv")
-df3['Sentiment'] = df3['Positive'].apply(lambda x: 1 if x >= 0.5 else 0)
-
-
-####################### HISTOGRAM ###############################
-def create_distribution3(bank):
-    subset_df3 = df3[df3['Bank'] == bank]
-    return px.histogram(data_frame=subset_df3, x="Negative", height=600, color_discrete_sequence=['indianred'])
+# URLs for the images
+url1 = 'https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Frontend/gxs_promoter_cloud.png'
+url2 = 'https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Frontend/gxs_detractor_cloud.png'
+url3 = 'https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Frontend/other_bank_promoter_cloud.png'
+url4  = 'https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Frontend/other_bank_detractor_cloud.png'
 
 
+# Download images
+download_image(url1, 'gxs_promoter_cloud.png')
+download_image(url2, 'gxs_detractor_cloud.png')
+download_image(url3, 'other_bank_promoter_cloud.png')
+download_image(url4, 'other_bank_detractor_cloud.png')
 
-####################### WIDGETS ################################
-banks3 = ['GXS Bank', 'Maribank', 'Revolut', 'Trust', 'Wise']
-dd3 = dcc.Dropdown(id="bank3", options=banks3, value="GXS Bank", clearable=False)
-
-
-####################### LAYOUT ################################
 def layout():
-    title = html.Div([
-        html.H1(
-            [
-                "Negative Sentiments"
-            ]
-        ),
+    # Encode image to base64
+    def encode_image(image_file):
+        with open(image_file, 'rb') as file:
+            encoded = base64.b64encode(file.read()).decode('ascii')
+        return f"data:image/png;base64,{encoded}"
+
+    # # Layouts
+    # layout = html.Div([
+    #     html.Br(),
+    #     html.H1("GXS Bank", style={'textAlign': 'center'}),
+    #     html.Img(src=encode_image('gxs_promoter_cloud.png'), style={'height': '50%', 'width': '50%', 'textAlign': 'center'})
+    # ])
+
+    # layout2 = html.Div([
+    #     html.Br(),
+    #     html.Br(),
+    #     html.H1("Commonly used words in negative reviews - GXS Bank", style={'textAlign': 'center'}),
+    #     html.Img(src=encode_image('gxs_detractor_cloud.png'), style={'height': '50%', 'width': '50%', 'textAlign': 'center'})
+    # ])
+
+    # layout3 = html.Div([
+    #     html.Br(),
+    #     html.Br(),
+    #     html.H1("Commonly used words in negative reviews - GXS Bank", style={'textAlign': 'center'}),
+    #     html.Img(src=encode_image('gxs_detractor_cloud.png'), style={'height': '50%', 'width': '50%', 'textAlign': 'center'})
+    # ])
+
+
+    layout = html.Div([
         html.Br(),
-        html.H3("Distribution of probability of whether a comment is negative, by banks")
-    ])
-    layout = html.Div(children=[
+        html.H1(["Commonly Used Words in Reviews"], style={'backgroundColor': '#333', 'color': 'white'}),
         html.Br(),
-        html.P("Select Column:"),
-        dd3,
-        dcc.Graph(id="histogram3")
+        dbc.Row([
+            html.H1(["GXS Bank"], style={'textAlign': 'center'}),
+            dbc.Col([
+                html.Img(src=encode_image('gxs_promoter_cloud.png'), style={'height': '100%', 'width': '90%'}, className = 'center')
+            ]),
+            dbc.Col([
+                html.Img(src=encode_image('gxs_detractor_cloud.png'), style={'height': '100%', 'width': '90%'}, className = 'center')
+            ])
+        ]
+        )
     ])
-    return title, layout
+    layout2 = html.Div([
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.Br(),
+        html.H1(["Other Banks"], style={'textAlign': 'center'}),
+        html.Br(),
+        dbc.Row([
+            dbc.Col([
+                html.Img(src=encode_image('other_bank_promoter_cloud.png'), style={'height': '100%', 'width': '90%'}, className = 'center')
+            ]),
+            dbc.Col([
+                html.Img(src=encode_image('other_bank_detractor_cloud.png'), style={'height': '100%', 'width': '90%'}, className = 'center')
+            ])
+        ]
+        )
+    ])
 
-
-
-####################### CALLBACKS ################################
-@callback(Output("histogram3", "figure"), [Input("bank3", "value"), ])
-def update_histogram3(bank3):
-    return create_distribution3(bank3)
+    return layout, layout2

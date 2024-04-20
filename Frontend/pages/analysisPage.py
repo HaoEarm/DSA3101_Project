@@ -4,7 +4,6 @@ import dash
 import requests
 import dash_bootstrap_components as dbc
 
-
 # Assume df is a pandas DataFrame with the data from your CSV
 df = pd.read_csv("https://raw.githubusercontent.com/HaoEarm/DSA3101_Project/main/Data/predictions.csv")
 banks = df['Bank'].unique().tolist()  # Get unique list of banks for the dropdown
@@ -18,10 +17,10 @@ example_query_button1 = dbc.Button(
     className="mb-2",
     style={
         'backgroundColor': '#FFB6C1',  # Light pink
-        'color': '#495057',            # Dark gray text
-        'borderRadius': '15px',        # Rounded corners
-        'border': 'none',              # Remove default border
-        'width': '70%',                # Maintain the width specification if desired
+        'color': '#495057',  # Dark gray text
+        'borderRadius': '15px',  # Rounded corners
+        'border': 'none',  # Remove default border
+        'width': '70%',  # Maintain the width specification if desired
         'boxShadow': '2px 2px 10px rgba(0,0,0,0.1)'  # Subtle shadow for depth
     }
 )
@@ -33,10 +32,10 @@ example_query_button2 = dbc.Button(
     className="mb-2",
     style={
         'backgroundColor': '#FFDAB9',  # Peach color
-        'color': '#495057',            # Dark gray text
-        'borderRadius': '15px',        # Rounded corners
-        'border': 'none',              # Remove default border
-        'width': '70%',                # Maintain the width specification if desired
+        'color': '#495057',  # Dark gray text
+        'borderRadius': '15px',  # Rounded corners
+        'border': 'none',  # Remove default border
+        'width': '70%',  # Maintain the width specification if desired
         'boxShadow': '2px 2px 10px rgba(0,0,0,0.1)'  # Subtle shadow for depth
     }
 )
@@ -74,54 +73,100 @@ def layout():
                     ],
                     style_data={'whiteSpace': 'normal', 'height': 'auto'},
                     page_size=5,  # Specify the number of rows per page
-                    style_table={'height': '700px', 'overflowY': 'auto'},
+                    style_table={'height': '75vh', 'overflowY': 'auto'},
                     style_header={'backgroundColor': 'rgb(30, 30, 30)', 'color': 'white'}
                 ),
             ], width=6),  # Using half the width of the row for the DataTable
             dbc.Col([
-                # This column now contains the output and input field, submit button
+                # output colomn
                 dcc.Loading(id="loading-query", children=[html.Div(
-                id="custom-query-output",
-                style={"overflowY": "scroll", "height": "600px"}  # Adjust height as needed
-            )], type="default",
+                    id="custom-query-output",
+                    style={"overflowY": "scroll", "height": "60vh"}
+                )], type="default",
                             style={"display": "none"}),
-                # Move this div to the bottom for input and submit
                 html.Div([
                     example_query_button1,
                     example_query_button2,
-                    dcc.Input(
+                    html.Div([dcc.Input(
                         id='custom-query-input',
                         type='text',
                         placeholder='Enter your query about the reviews...',
-                        style={'width': '90%'}  # Adjust width as needed
-                    ),
-                    dbc.Button(
-                        html.Span(className="fa fa-arrow-right"),  # Using Font Awesome arrow icon
+                        style={'width': '95%'}
+                    ), dbc.Button(
+                        html.Span(className="fa fa-arrow-right"),
                         id='submit-query-btn',
                         n_clicks=0,
                         className="btn btn-primary",
-                        style={'padding': '2px 6px'}
-                    ),
-                ], style={'width': '50%', 'position': 'absolute', 'bottom': 10}),
-                # Make sure this takes the full width
+                        style={'width': '5%', 'padding': '2px 6px'}
+                    )]),
+                ], style={'flex': '1', 'display': 'flex', 'flexDirection': 'column', 'justifyContent': 'flex-end',
+                          'marginTop': 'auto'}),
             ], width=6),  # Using the other half of the width
         ]),
     ], style={'padding': '20px'})
+
+
+from dash import html, dcc, Output, Input, State, callback
+
+
+# Existing imports and setup...
 
 @callback(
     Output('custom-query-output', 'children'),
     Input('submit-query-btn', 'n_clicks'),
     State('custom-query-input', 'value'),
+    State('custom-query-output', 'children'),  # Get the current output as state
     prevent_initial_call=True
 )
-def handle_custom_query(n_clicks, query):
+def handle_custom_query(n_clicks, query, current_output):
     if n_clicks > 0 and query:
         response = requests.post('http://localhost:5001/custom_query', json={"query": query})
+
+        # query_display = html.Div([
+        #     dbc.Icon(icon="magnifying-glass", style={'marginRight': '5px'}),  # Use the appropriate icon name
+        #     html.Strong("You: "),
+        #     html.Span(query)
+        # ], style={'color': '#000000', 'fontSize': '16px', 'padding': '5px', 'backgroundColor': '#f8f9fa',
+        #           'borderRadius': '10px', 'display': 'inline-flex', 'alignItems': 'center'})
+
+        # Display the query as part of the output
+        query_display = html.Div([
+            html.I(className="fa-solid fa-user"),
+            html.Strong(" Query: "),
+            html.Span(query)
+        ], style={'color': '#007BFF'})  # Styling the query to differentiate it
+
         if response.status_code == 200:
             result = response.json().get('response', 'No response found.')
-            return html.Div([html.P(part) for part in result.split('\n')])
+            result_display = html.Div([html.P(part) for part in result.split('\n')])
+
+            # Group the query and its result together
+            new_entry = html.Div([
+                query_display,
+                html.Hr(),  # Line to visually separate different entries
+                result_display
+            ])
+
+            # Append new entry to the existing content
+            if current_output:
+                current_output.append(new_entry)
+                return current_output
+            else:
+                return [new_entry]
         else:
-            return f"Failed to get response. Status code: {response.status_code}"
+            error_message = f"Failed to get response. Status code: {response.status_code}"
+            error_display = html.Div([
+                query_display,
+                html.Hr(),
+                html.P(error_message)
+            ])
+
+            # Handle error by appending error message
+            if current_output:
+                current_output.append(error_display)
+                return current_output
+            else:
+                return [error_display]
     return "Please enter a query and press submit."
 
 
@@ -133,7 +178,9 @@ def update_table(selected_bank):
     filtered_df = df[df['Bank'] == selected_bank]
     return filtered_df.to_dict('records')
 
+
 from dash import callback_context
+
 
 @callback(
     Output('custom-query-input', 'value'),

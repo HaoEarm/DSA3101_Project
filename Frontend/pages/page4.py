@@ -40,14 +40,13 @@ nps_scores = nps_scores.sort_values(by=['nps'], ascending=[True])
 
 bar = px.bar(nps_scores, x='Bank', y='nps',width=1600, height=700,
              labels={"nps": "Net Promoter Score"})
-# bar.update_layout(
-#     margin=dict(l=20, r=20, t=20, b=20),
-#     paper_bgcolor="White",
-# )
+bar.update_layout(
+    font = dict(size=16)
+)
 
 
 def layout():
-    layout = html.Div([html.Br(),html.H1(["NPS Scores"], style={'backgroundColor': '#333', 'color': 'white'}),
+    layout = html.Div([html.Br(),html.H1(["Net Promoter Scores"], style={'backgroundColor': '#333', 'color': 'white'}),
                        html.Br(),
                        html.Div(["NPS Scores Across Banks"], style={"fontSize":30}),
     dbc.Row(

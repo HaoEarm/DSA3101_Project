@@ -234,6 +234,7 @@ def update_graph(bank):
         # Create only overall graph
         graph = px.line(preds, x="Date", y="cum_pos",
                 labels={"cum_pos": "Cumulative Sentiment Score"})
+        graph.update_layout(height = 600)
         return graph
     elif ("Overall (Average Across All Banks)" in bank) and (len(bank) > 1):
         # Create both overall and other graphs
@@ -242,13 +243,14 @@ def update_graph(bank):
         graph = px.line(subset_df, x="Date", y="cum_pos", color="Bank",
                 labels={"cum_pos": "Cumulative Sentiment Score"})
         graph.add_scatter(name="Overall", x=preds.Date, y=preds.cum_pos)
+        graph.update_layout(height = 600)
         return graph
     else:
         subset_df = preds[preds["Bank"].isin(bank)]
         graph = px.line(subset_df, x="Date", y="cum_pos", color="Bank",
                     labels={"cum_pos": "Cumulative Sentiment Score"})
+        graph.update_layout(height = 600)
         return graph
-
     # subset_df = preds[preds["Bank"].isin(bank)]
     # graph = px.line(subset_df, x="Date", y="cum_pos", color="Bank",
     #         labels={"cum_pos": "Cumulative Sentiment Score"})

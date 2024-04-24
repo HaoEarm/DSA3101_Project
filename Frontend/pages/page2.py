@@ -30,6 +30,7 @@ from flask import Flask
 import os
 import plotly.express as px
 #import charts
+from datetime import datetime, timedelta
 
 register_page(
     __name__,
@@ -57,8 +58,10 @@ def create_histogram2(bank):
         subset_df2 = df2
     else:
         subset_df2 = df2[df2['Bank'] == bank]
-    return px.histogram(data_frame=subset_df2, x="Positive",
+    hist = px.histogram(data_frame=subset_df2, x="Positive",
                        height = 800)
+    hist.update_layout(font = dict(size=16), xaxis_title="Sentiment Score", yaxis_title="Count")
+    return hist
 
 def create_line2(bank):
     if bank == "Overall":
@@ -86,14 +89,18 @@ def create_line2(bank):
     # line.add_scatter(name="Neutral", x=result.Date, y=result.Neutral, fill="tonexty")
     # line.add_scatter(name="Negative", x=result.Date, y=result.Negative, fill="tonexty")
     # line.update_layout(xaxis_title="Year", yaxis_title="Number of Sentiments")
-
-    line = go.Figure(go.Bar(x=result.Date, y=result.Positive, name='Positive'))
-    line.add_trace(go.Bar(x=result.Date, y=result.Neutral, name='Neutral'))
-    line.add_trace(go.Bar(x=result.Date, y=result.Negative, name='Negative'))
+    
+    dates = result.Date
+    # Decrease the x axi years by one year to get correct display
+    dates_minus_one_year = [date - timedelta(days=365) for date in dates]
+    x_labels = [date.strftime('%Y-%m-%d') for date in dates_minus_one_year]
+    line = go.Figure(go.Bar(x=x_labels, y=result.Positive, name='Positive'))
+    line.add_trace(go.Bar(x=x_labels, y=result.Neutral, name='Neutral'))
+    line.add_trace(go.Bar(x=x_labels, y=result.Negative, name='Negative'))
 
     line.update_layout(barmode='stack', xaxis={'categoryorder':'category ascending'},
                        xaxis_title="Year", yaxis_title="Number of Sentiments", width=1900,
-                       height = 900)
+                       height = 900, font = dict(size=16))
 
 
     return line
@@ -120,7 +127,7 @@ def layout():
         dbc.Row(
             [dbc.Col(
                     [html.Div(["Number of Sentiments Overtime"], style={"fontSize":30}),
-                     html.Div([dcc.Graph(id = 'line2')], style={'height': '1000%', 'width': '100%'})]
+                     html.Div([dcc.Graph(id = 'line2')], style={'height': '800%', 'width': '100%'})]
                 ),
                 dbc.Col(
                     [html.Div(["Distribution of Sentiment Scores"], style={"fontSize":30}), 

@@ -11,7 +11,7 @@ def create_navbar():
                         html.I(className="fa-brands fa-github"),  # Font Awesome Icon
                         " "  # Text beside icon
                     ],
-                    href="[https://github.com/HaoEarm/DSA3101_Project/tree/main]",
+                    href="https://github.com/HaoEarm/DSA3101_Project/tree/main",
                     target="_blank"
                 )
 

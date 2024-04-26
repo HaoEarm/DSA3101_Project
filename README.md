@@ -4,5 +4,10 @@ Our group's project is about conducting sentiment analysis on online reviews of 
 ## Docker 
 The directory for Backend's dockerfile is:
 ```
-Backend/testing
+Backend
+```
+
+The directory for Frontend's dockerfile is:
+```
+Frontend
 ```

@@ -120,7 +120,7 @@ from dash import html, dcc, Output, Input, State, callback
 )
 def handle_custom_query(n_clicks, query, current_output):
     if n_clicks > 0 and query:
-        response = requests.post('http://localhost:5001/custom_query', json={"query": query})
+        response = requests.post('http://backend:5001/custom_query', json={"query": query})
 
         # query_display = html.Div([
         #     dbc.Icon(icon="magnifying-glass", style={'marginRight': '5px'}),  # Use the appropriate icon name

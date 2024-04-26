@@ -5,4 +5,5 @@ seaborn
 transformers
 scipy
 torch
-
+Flask==2.0.1
+openai

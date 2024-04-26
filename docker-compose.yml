@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"  # Map port 8050 of the container to port 8050 on the host
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./Backend/Test
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"  # Assuming your backend runs on port 5001
+
+networks:
+  default:
+    driver: bridge

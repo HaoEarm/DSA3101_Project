@@ -10,5 +10,7 @@ COPY . /app
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+EXPOSE 5001
+
 # Run your Python script when the container launches
-CMD ["python", "kaludi sentiment analysis.py"]
+CMD ["python", "review_analysis.py"]

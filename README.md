@@ -15,7 +15,7 @@ Frontend
 The docker compose file is in the main directory.
 To use our application, please change the OPENAI_API_KEY in the file 'constants' and run 
 ```
-docker compose up --build d
+docker compose up --build -d
 ```
 in the root folder. Then you can use our application on 
 ```
